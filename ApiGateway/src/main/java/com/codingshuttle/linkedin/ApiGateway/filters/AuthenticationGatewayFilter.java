@@ -35,7 +35,7 @@ public class AuthenticationGatewayFilter extends AbstractGatewayFilterFactory<Au
                 return exchange.getResponse().setComplete();
             }
 
-            String tokenId = tokenHeader.split("Bearer")[1];
+            String tokenId = tokenHeader.split("Bearer ")[1];
 
             String userId = jwtService.getUserIdFromToken(tokenId).toString();
 

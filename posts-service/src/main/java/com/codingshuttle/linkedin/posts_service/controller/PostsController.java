@@ -1,11 +1,13 @@
 package com.codingshuttle.linkedin.posts_service.controller;
 
+import com.codingshuttle.linkedin.posts_service.auth.UserContextHolder;
 import com.codingshuttle.linkedin.posts_service.dto.PostCreateRequestDto;
 import com.codingshuttle.linkedin.posts_service.dto.PostDto;
-import com.codingshuttle.linkedin.posts_service.entity.Post;
 import com.codingshuttle.linkedin.posts_service.service.PostsService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,9 @@ public class PostsController {
 
     private final PostsService postsService;
 
+    private static final Logger log = LoggerFactory.getLogger(PostsController.class);
+
+
     @PostMapping
     public ResponseEntity<PostDto> createPost(@RequestBody PostCreateRequestDto postDto, HttpServletRequest httpServletRequest) {
         PostDto createdPost = postsService.createPost(postDto, 1L);
@@ -26,7 +31,10 @@ public class PostsController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDto> getPost(@PathVariable Long postId) {
+    public ResponseEntity<PostDto> getPost(@PathVariable Long postId,HttpServletRequest httpServletRequest) {
+        String userId = httpServletRequest.getHeader("X-User-Id");
+        log.info("In PostController the user id is "+ userId);
+        log.info("In UserContextHolder the user id is "+ UserContextHolder.getCurrentUserId());
         PostDto postDto = postsService.getPostById(postId);
         return ResponseEntity.ok(postDto);
     }
