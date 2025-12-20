@@ -1,5 +1,8 @@
 package com.codingshuttle.linkedin.posts_service.service;
 
+import com.codingshuttle.linkedin.posts_service.auth.UserContextHolder;
+import com.codingshuttle.linkedin.posts_service.clients.ConnectionClient;
+import com.codingshuttle.linkedin.posts_service.dto.PersonDto;
 import com.codingshuttle.linkedin.posts_service.dto.PostCreateRequestDto;
 import com.codingshuttle.linkedin.posts_service.dto.PostDto;
 import com.codingshuttle.linkedin.posts_service.entity.Post;
@@ -20,6 +23,7 @@ public class PostsService {
 
     private final PostsRepository postsRepository;
     private final ModelMapper modelMapper;
+    private final ConnectionClient connectionClient;
 
     public PostDto createPost(PostCreateRequestDto postDto, Long userId) {
         Post post = modelMapper.map(postDto, Post.class);
@@ -31,6 +35,15 @@ public class PostsService {
 
     public PostDto getPostById(Long postId) {
         log.debug("Retrieving post with ID: {}", postId);
+
+        List<PersonDto> firstDegreeFriends = connectionClient.getFirstConnections(UserContextHolder.getCurrentUserId());
+        log.info("First degree friends retrieved: {}", firstDegreeFriends);
+
+        for(PersonDto friend : firstDegreeFriends)
+        {
+            log.info("Friend ID: {}", friend.getName());
+        }
+
         Post post = postsRepository.findById(postId).orElseThrow(() ->
                 new ResourceNotFoundException("Post not found with id: "+postId));
         return modelMapper.map(post, PostDto.class);

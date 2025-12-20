@@ -19,7 +19,7 @@ public class PersonController {
     @Autowired
     private PersonServiceImpl personService;
 
-    @GetMapping("/connections/first/{userId}")
+    @GetMapping("/first/{userId}")
     public ResponseEntity<List<Person>> getFirstConnections(@PathVariable Long userId){
         return ResponseEntity.ok(personService.getFirstDegreeConnections(userId));
     }
